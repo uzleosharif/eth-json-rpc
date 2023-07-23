@@ -1,0 +1,33 @@
+
+
+#include "types.hpp"
+
+#include <algorithm>
+#include <string>
+
+#include "utils.hpp"
+
+#include "fmt/core.h"
+
+namespace eth {
+
+Address::Address() noexcept {
+  std::ranges::fill(value_, '0');
+}
+
+Address::Address(std::string_view addr_str) noexcept {
+  if (auto validity{Valid(addr_str)}; not validity) {
+    //TODO: red color for emphasis on ERROR
+    fmt::print("ERROR: {}. Cause: {}. addr_str={}\n",
+               "Address(std::string_view) failed", validity.error(), addr_str);
+    std::ranges::fill(value_, 'f');
+  }
+
+  std::copy(std::begin(addr_str) + 2, std::end(addr_str), std::begin(value_));
+}
+
+auto Address::Str() const noexcept -> std::string_view {
+  return std::string_view{value_};
+}
+
+}  // namespace eth

@@ -5,9 +5,13 @@ project(eth LANGUAGES CXX)
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(CMAKE_CXX_STANDARD 23)
+
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -stdlib=libc++ -fmodules")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Wshadow -Wpedantic -Wconversion")
 
 find_package(cpr REQUIRED)
+find_package(fmt REQUIRED)
 
-add_executable(eth main.cpp)
-target_link_libraries(eth PRIVATE cpr::cpr)
+add_executable(eth src/main.cpp src/types.cpp src/utils.cpp)
+target_link_libraries(eth PRIVATE cpr::cpr fmt::fmt)
+target_include_directories(eth PUBLIC include/)
