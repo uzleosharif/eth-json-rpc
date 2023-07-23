@@ -1,0 +1,6 @@
+[requires]
+cpr/1.10.1
+
+[generators]
+CMakeDeps
+CMakeToolchain

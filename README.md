@@ -1,0 +1,4 @@
+
+
+# Goals
+- Ethereum lottery 
