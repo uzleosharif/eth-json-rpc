@@ -26,8 +26,9 @@ Address::Address(std::string_view addr_str) noexcept {
   std::copy(std::begin(addr_str) + 2, std::end(addr_str), std::begin(value_));
 }
 
-auto Address::Str() const noexcept -> std::string_view {
-  return std::string_view{value_};
+auto Address::Str() const noexcept -> std::string {
+  return (std::string{"0x"} +
+          std::string{std::begin(value_), std::end(value_)});
 }
 
 }  // namespace eth

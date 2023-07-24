@@ -1,0 +1,50 @@
+
+
+#ifndef ACCOUNT_HPP
+#define ACCOUNT_HPP
+
+#include <expected>
+#include <type_traits>
+
+#include "utils.hpp"
+
+namespace eth {
+
+template <RpcClient client_t>
+class Account final {
+ public:
+  Account(Address&& address) noexcept : address_{address} {}
+  Account(const Account&) = delete;
+  Account& operator=(const Account&) = delete;
+  Account(Account&&) noexcept = default;
+  Account& operator=(Account&&) noexcept = default;
+
+  [[nodiscard]] auto Balance() const noexcept
+      -> std::expected<std::string, std::string> {
+    auto balance_response{
+        rpc_client_.SendRequest("eth_getBalance", {address_.Str(), "latest"})};
+    if (not balance_response) {
+      return std::unexpected{"JSON-RPC error: " + balance_response.error()};
+    }
+
+    auto& balance{balance_response.value()};
+    if (balance.contains("error")) {
+      return std::unexpected{"JSON-RPC error: " +
+                             std::string{balance["error"]["message"]}};
+    }
+
+    return balance["result"];
+  }
+
+ private:
+  Address address_{};
+  client_t rpc_client_{};
+};
+
+static_assert(not std::is_copy_assignable_v<Account<RpcClientCpr>>);
+static_assert(not std::is_copy_constructible_v<Account<RpcClientCpr>>);
+static_assert(std::is_move_assignable_v<Account<RpcClientCpr>>);
+static_assert(std::is_move_constructible_v<Account<RpcClientCpr>>);
+}  // namespace eth
+
+#endif
