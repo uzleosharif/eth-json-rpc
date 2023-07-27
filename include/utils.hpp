@@ -12,8 +12,12 @@
 #include "nlohmann/json.hpp"
 
 namespace eth {
+
 [[nodiscard]] auto Valid(std::string_view) noexcept
     -> std::expected<void, std::string>;
+
+[[nodiscard]] auto HexToDouble(std::string_view hex_str) noexcept
+    -> std::expected<double, std::string>;
 
 template <typename client_t>
 concept RpcClient = requires(const client_t& rpc_client,

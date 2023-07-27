@@ -4,9 +4,28 @@
 
 #include <regex>
 
+#include "boost/multiprecision/cpp_bin_float.hpp"
+#include "boost/multiprecision/cpp_int.hpp"
 #include "fmt/core.h"
 
 namespace eth {
+
+auto HexToDouble(std::string_view hex_str) noexcept
+    -> std::expected<double, std::string> {
+  static const boost::multiprecision::uint256_t kDecimalFactor{
+      std::pow(10, 18)};
+
+  try {
+    auto result =
+        static_cast<boost::multiprecision::cpp_bin_float_100>(
+            boost::multiprecision::uint256_t{hex_str}) /
+        static_cast<boost::multiprecision::cpp_bin_float_100>(kDecimalFactor);
+    return result.convert_to<double>();
+  } catch (const std::exception& ex) {
+    return std::unexpected{
+        fmt::format("division failed with exception: {}", ex.what())};
+  }
+}
 
 auto Valid(std::string_view addr_str) noexcept
     -> std::expected<void, std::string> {

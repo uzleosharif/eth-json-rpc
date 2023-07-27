@@ -11,8 +11,16 @@ auto main() -> int {
 
   auto balance{account.Balance()};
   if (balance.has_value()) {
-    fmt::print("account balance = {}\n", balance.value());
+    auto balance_double{eth::HexToDouble(balance.value())};
+    if (balance_double.has_value()) {
+      fmt::print("{}\n", balance_double.value());
+    } else {
+      fmt::print("ERROR: {}\n", balance_double.error());
+    }
   } else {
     fmt::print("ERROR: {}\n", balance.error());
   }
+
+  // TODO: replace via monadic functions
+  //  auto balance{account.Balance().and_then(eth::HexToDouble)};
 }
