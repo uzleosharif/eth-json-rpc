@@ -2,7 +2,6 @@
 #ifndef UTILS_HPP
 #define UTILS_HPP
 
-#include <expected>
 #include <string_view>
 #include <type_traits>
 
@@ -10,21 +9,22 @@
 
 #include "cpr/cpr.h"
 #include "nlohmann/json.hpp"
+#include "tl/expected.hpp"
 
 namespace eth {
 
 [[nodiscard]] auto Valid(std::string_view) noexcept
-    -> std::expected<void, std::string>;
+    -> tl::expected<void, std::string>;
 
 [[nodiscard]] auto HexToDouble(std::string_view hex_str) noexcept
-    -> std::expected<double, std::string>;
+    -> tl::expected<double, std::string>;
 
 template <typename client_t>
 concept RpcClient = requires(const client_t& rpc_client,
                              std::string_view method, nlohmann::json&& params) {
   {
     rpc_client.SendRequest(method, std::move(params))
-  } -> std::same_as<std::expected<nlohmann::json, std::string>>;
+  } -> std::same_as<tl::expected<nlohmann::json, std::string>>;
 };
 
 // JSON RPC client using CPR lib
@@ -42,7 +42,7 @@ class RpcClientCpr final {
 
   [[nodiscard]] auto SendRequest(std::string_view method,
                                  nlohmann::json&& params) const noexcept
-      -> std::expected<nlohmann::json, std::string>;
+      -> tl::expected<nlohmann::json, std::string>;
 
  private:
 };

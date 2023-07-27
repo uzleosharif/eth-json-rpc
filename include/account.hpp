@@ -3,9 +3,9 @@
 #ifndef ACCOUNT_HPP
 #define ACCOUNT_HPP
 
-#include <expected>
 #include <type_traits>
 
+#include "tl/expected.hpp"
 #include "utils.hpp"
 
 namespace eth {
@@ -20,17 +20,17 @@ class Account final {
   Account& operator=(Account&&) noexcept = default;
 
   [[nodiscard]] auto Balance() const noexcept
-      -> std::expected<std::string, std::string> {
+      -> tl::expected<std::string, std::string> {
     auto balance_response{
         rpc_client_.SendRequest("eth_getBalance", {address_.Str(), "latest"})};
     if (not balance_response) {
-      return std::unexpected{"JSON-RPC error: " + balance_response.error()};
+      return tl::unexpected{"JSON-RPC error: " + balance_response.error()};
     }
 
     auto& balance{balance_response.value()};
     if (balance.contains("error")) {
-      return std::unexpected{"JSON-RPC error: " +
-                             std::string{balance["error"]["message"]}};
+      return tl::unexpected{"JSON-RPC error: " +
+                            std::string{balance["error"]["message"]}};
     }
 
     return balance["result"];
